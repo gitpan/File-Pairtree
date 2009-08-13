@@ -1,93 +1,99 @@
-use Test::More;
+use Test::More qw( no_plan );
 use warnings;
 use strict;
 
 my $script = 'pt';		# script we're testing
 
+# as of 09.08.11
 #### start boilerplate for script name and temporary directory support
 
-my $td = "td_$script";			# temporary testing directory
-my $bin = 'blib/script/' . $script;	# path to testable script
-my $cmd = '2>&1 perl -x -Mblib ' .	# command to set it off
-	(-x $bin ? $bin : "../$bin") . ' ';
+my $td = "td_$script";		# temporary test directory named for script
+# Depending on how circs, use blib, but prepare to use lib as fallback.
+my $blib = (-e "blib" || -e "../blib" ?	"-Mblib" : "-Ilib");
+my $bin = ($blib eq "-Mblib" ?		# path to testable script
+	"blib/script/" : "") . $script;
+my $cmd = "2>&1 perl -x $blib " .	# command to run, capturing stderr
+	(-x $bin ? $bin : "../$bin") . " ";	# exit status in $? >> 8
 
 use File::Path;
-sub mk_td {				# make $td with possible cleanup
-	rm_td()		if (-e $td);
-	mkdir($td)	or die("$td: couldn't mkdir: $!");
+sub mk_td {		# make $td with possible cleanup
+	-e $td			and rm_td();
+	mkdir($td)		or die "$td: couldn't mkdir: $!";
 }
-sub rm_td {				# to remove $td without big stupidity
-	die("bad dirname \$td=$td")		if (! $td or $td eq '.');
+sub rm_td {		# remove $td but make sure $td isn't set to "."
+	! $td || $td eq "."	and die "bad dirname \$td=$td";
 	eval { rmtree($td); };
-	die("$td: couldn't remove: $@")		if ($@);
+	$@			and die "$td: couldn't remove: $@";
 }
 
 #### end boilerplate
-
-# xxx what we're actually testing
-#use File::Value;
 
 {
 mk_td();
 my $x;
 
 $x = `$cmd -d $td mknode abc`;
-is $?, 0, "status ok on simple mknode";
+is $?, 0, "status good on simple mknode";
 
 like $x, qr|ab/c/|, "simple mknode";
 
 $x = `$cmd -d $td lstree`;
-is $?, 0, "status ok on simple lstree";
+is $?, 0, "status good on simple lstree";
 
 like $x, qr|abc\n1 object$|, "simple lstree with one node";
 
-mk_td();
+mk_td();		# re-make temp dir
 
 $x = `$cmd -d dummy mktree $td prefix`;
-is $?, 0, "status ok on mktree with prefix";
+is $?, 0, "status good on mktree with prefix and ignored -d";
+
+$x = `$cmd -d dummy lstree`;
+isnt $?, 0, "status non-zero on lstree as -d wasn't created";
+chop $x;
+
+like $x, qr|no such file or dir|, "complaint of non-existent tree";
 
 $x = `$cmd -d $td mknode prefixabc prefixdef prefixhigk`;
-like $x, qr|abc.*def.*higk.$|s, "make 3 nodes at once with prefix";
+like $x, qr|abc.*def.*higk.$|s, "make 3 nodes at once, prefix stripped";
 
-# ok(-f "$td/foo", "file is a file");
-# 
-# $x = `$cmd $td/bar/foo`;
-# chop($x);
-# like $x, qr/.o such file or directory/, "non-existent intermediate dir";
-# 
-# $x = `$cmd $td/bar/`;
-# chop($x);
-# is $x, "$td/bar/", "snag simple directory";
-# 
-# ok(-d "$td/bar", "directory is a directory");
-# 
-# $x = `$cmd -f $td/bar`;
-# chop($x);
-# is $x, "$td/bar", "snag file, forcing replace of directory";
-# 
-# ok(-f "$td/bar", "replacement is a file");
-# 
-# $x = `$cmd --next $td/bar`;
-# chop($x);
-# is $x, "$td/bar1", "snag next version of unnumbered file";
-# 
-# $x = `$cmd --next $td/bar/`;
-# chop($x);
-# like $x, qr/different/, "snag next dir version of file version";
-# 
-# $x = `$cmd --next $td/bar500`;
-# chop($x);
-# is $x, "$td/bar002", "snag version 2 padded 3, low 500, pre-existing";
-# 
-# $x = `$cmd --next $td/zaf500`;
-# chop($x);
-# is $x, "$td/zaf500", "snag version 500 padded 3, low 500 of non-existing";
-# 
-# $x = `$cmd --next $td/zaf1`;
-# chop($x);
-# is $x, "$td/zaf501", "snag version 501 padded 1, low 1 of pre-existing";
+$x = `$cmd --dummy lsnode prefixdef`;
+ok($? > 1, "status greater than 1 on bad option");
+
+$x = `$cmd -d $td lsnode prefixxyz prefixdef`;
+is $?>>8, 1, "status 1 on lsnode with at least one non-existent node";
+
+$x = `$cmd -fd $td lsnode def`;
+is $?>>8, 2, "status 2 on lsnode of existing node, no prefix, but --force)";
+
+$x = `$cmd -d $td lsnode def`;
+is $?, 0, "status good on lsnode of existing node, no prefix (no --force)";
+
+$x = `$cmd -d $td lsnode prefixdef`;
+is $?, 0, "status good on lsnode of existing node (with prefix)";
+
+$x = `$cmd -d $td rmnode prefixdef`;
+is $?, 0, "status good on rmnode of existing node (with prefix)";
+
+$x = `$cmd -d $td rmnode prefixdummy`;
+is $?>>8, 1, "soft fail on rmnode of non-existing node (with prefix)";
+
+mk_td();		# re-make temp dir
+
+$x = `$cmd -d $td mknode abc abcd abcde def ghi jkl`;
+$x = `$cmd -d $td lstree`;
+like $x, qr/6 objects/, 'make and list 6 object tree, overlapping ids';
+
+my $R = 'pairtree_root';
+`date > $td/$R/ab/c/foo`;	# set up unencapsulated file error
+`mkdir $td/$R/de/f/fo`;		# set up shorty after morty error
+`mkdir $td/$R/gh/i/ghi2`;	# set up unencapsulated group error
+
+$x = `$cmd -d $td lstree`;
+like $x, qr/split end.*forced path ending.*unencapsulated file/s,
+	'detected 3 types of pairtree corruption';
+#print "x=$x\n";
 
 rm_td();
 }
 
-done_testing();
+#done_testing();

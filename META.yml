@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               File-Pairtree
-version:            0.22
+version:            0.23
 abstract:           routines to manage pairtrees
 author:
     - John Kunze <jak@ucop.edu>
@@ -10,7 +10,16 @@ configure_requires:
     ExtUtils::MakeMaker:  0
 build_requires:
     ExtUtils::MakeMaker:  0
-requires:  {}
+requires:
+    Carp:           0
+    File::ANVL:     0
+    File::Find:     0
+    File::Glob:     0
+    File::Namaste:  0
+    File::Path:     0
+    File::Value:    0
+    Getopt::Long:   0
+    Pod::Usage:     0
 no_index:
     directory:
         - t
