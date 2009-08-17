@@ -1,10 +1,35 @@
-#########################
+use Test::More qw( no_plan );
+use warnings;
+use strict;
 
-# change 'tests => 1' to 'tests => last_test_to_print';
+my $script = 'pt';		# script we're (not actually) testing
+
+# as of 2009.08.15
+#### start boilerplate for script name and temporary directory support
+
+$ENV{'SHELL'} = "/bin/sh";
+my $td = "td_$script";		# temporary test directory named for script
+# Depending on how circs, use blib, but prepare to use lib as fallback.
+my $blib = (-e "blib" || -e "../blib" ?	"-Mblib" : "-Ilib");
+my $bin = ($blib eq "-Mblib" ?		# path to testable script
+	"blib/script/" : "") . $script;
+my $cmd = "2>&1 perl -x $blib " .	# command to run, capturing stderr
+	(-x $bin ? $bin : "../$bin") . " ";	# exit status in $? >> 8
+
+use File::Path;
+sub mk_td {		# make $td with possible cleanup
+	-e $td			and rm_td();
+	mkdir($td)		or die "$td: couldn't mkdir: $!";
+}
+sub rm_td {		# remove $td but make sure $td isn't set to "."
+	! $td || $td eq "."	and die "bad dirname \$td=$td";
+	eval { rmtree($td); };
+	$@			and die "$td: couldn't remove: $@";
+}
+
+#### end boilerplate
 
 use File::Pairtree;
-
-use Test::More tests => 66;
 
 my $pre = $File::Pairtree::root;
 

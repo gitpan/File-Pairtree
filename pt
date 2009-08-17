@@ -15,7 +15,7 @@ use warnings;
 # xxx support for shadow tree of deletions? pairtree_trash?
 
 my $VERSION;
-$VERSION = sprintf "%d.%02d", q$Revision: 0.23 $ =~ /(\d+)/g;
+$VERSION = sprintf "%d.%02d", q$Revision: 0.24 $ =~ /(\d+)/g;
 
 use File::Pairtree;
 use File::Path;
@@ -363,7 +363,6 @@ This alpha-level software has not been extensively tested.
    removed: bar | ./pairtree_root/ba/r/
    $ touch ./pairtree_root/za/fp/zafp/{a,b,c}
    $ pt lstree -l
-   Id     Oxum
    zafp   0.3
    foo   0.0
    2 objects
