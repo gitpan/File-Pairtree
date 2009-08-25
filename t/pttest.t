@@ -1,6 +1,7 @@
+use 5.006;
 use Test::More qw( no_plan );
-use warnings;
 use strict;
+use warnings;
 
 my $script = 'pt';		# script we're testing
 
@@ -90,8 +91,12 @@ my $R = 'pairtree_root';
 `mkdir $td/$R/gh/i/ghi2`;	# set up unencapsulated group error
 
 $x = `$cmd -d $td lstree`;
-like $x, qr/split end.*forced path ending.*unencapsulated file/s,
-	'detected 3 types of pairtree corruption';
+like $x, qr/split end/s, 'detected split end';
+
+like $x, qr/forced path ending/s, 'detected shorty after morty';
+
+like $x, qr/unencapsulated file/s, 'detected unencapsulated group';
+
 #print "x=$x\n";
 
 rm_td();

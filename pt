@@ -9,13 +9,13 @@ eval 'exec perl -x -S $0 ${1+"$@"} ;'
 
 # XXX above lines as of 8/3/2009
 
+use 5.006;
 use strict;
 use warnings;
 
 # xxx support for shadow tree of deletions? pairtree_trash?
 
-my $VERSION;
-$VERSION = sprintf "%d.%02d", q$Revision: 0.24 $ =~ /(\d+)/g;
+my $VERSION = $File::Pairtree::VERSION;
 
 use File::Pairtree;
 use File::Path;

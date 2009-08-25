@@ -1,11 +1,11 @@
 package File::Pairtree;
 
-use 5.000000;
+use 5.006;
 use strict;
 use warnings;
 
 our $VERSION;
-$VERSION = sprintf "%d.%02d", q$Name: Release-0-24 $ =~ /Release-(\d+)-(\d+)/;
+$VERSION = sprintf "%d.%02d", q$Name: Release-0-25 $ =~ /Release-(\d+)-(\d+)/;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -62,6 +62,8 @@ sub pair_means{ my( $n )=@_;
 	$pairm1 = $pair - 1;	# xxx what if $pairm1 is zero?
 	return 1;
 }
+# XXXXXXXX arrange to call this at compile time?? punish the user if
+#  they call it themselves???
 
 # If not done so on import, define now how many octets in a pair.
 #
@@ -115,6 +117,8 @@ my $P = $proper_ppath_re;
 # character that separates entire pathnames, eg, ':' in the PATH
 # environment variable.
 #
+# XXXXX this $pathcomp_sep -- is it worth a variable or is it better to
+# let it be constant so we can compile the regexp?
 sub id2ppath{ my( $id, $pathcomp_sep )=@_;	# single arg form, second
 						# arg not advertized
 
@@ -611,12 +615,12 @@ sub pt_visit_node {	# receives no args
 
 	if (-f $tpname) {
 		$filecount++;
-		if (m@^.*$R/(.*/)?pairtree.*$@) {
+		if (m@^.*$R/(.*/)?pairtree.*$@o) {
 			### print "$pdname PTREEFILE $tpname\n";
 			# xxx    if $verbose;
 			# else -prune ??
 		}
-		elsif (m@^.*$R/$P/[^/]+$@) {
+		elsif (m@^.*$R/$P/[^/]+$@o) {
 			#print "m@.*$R/$P/[^/]+@: $_\n";
 		 	#print "$pdname UF $tpname\n";
 			print "error: corrupted pairtree at pairpath ",
@@ -634,14 +638,14 @@ sub pt_visit_node {	# receives no args
 	}
 	elsif (-d $tpname) {
 		$dircount++;
-		if (m@^.*$R/(.*/)?pairtree.*$@) {
+		if (m@^.*$R/(.*/)?pairtree.*$@o) {
 			#print "$pdname PTREEDIR $tpname\n";
 			# xxx if $verbose;
 		#	-prune
 		}
 		# At last, we're entering a "regular" object.
 		# XXXXXXX add re qualifier so Perl knows re's not changing
-		elsif (m@^.*$R/($P/)?[^/]{$pairp1,}$@) {
+		elsif (m@^.*$R/($P/)?[^/]{$pairp1,}$@o) {
 			# start new object; but end previous object first
 			# form: ppath, EncapErr, octets, streams
 			$objectcount++;
@@ -650,13 +654,13 @@ sub pt_visit_node {	# receives no args
 			#	-fprintf $altout 'START %h 0\n'
 			#	$noprune
 		}
-		elsif (m@^.*$R/$P$@) {
+		elsif (m@^.*$R/$P$@o) {
 			#	-empty
 			# xxx if $verbose...	-printf '%p EP -\n'
 		}
 		# $pair, $pairm1, $pairp1
 		# We have a post-morty encapsulation error
-		elsif (m@^.*$R/([^/]{$pair}/)*[^/]{1,$pairm1}/[^/]{1,$pair}$@) {
+		elsif (m@^.*$R/([^/]{$pair}/)*[^/]{1,$pairm1}/[^/]{1,$pair}$@o) {
 			#print "$pdname PM $tpname\n";
 			print "error: corrupted pairtree at pairpath ",
 				"$pdname/: found '$tpname' after forced ",

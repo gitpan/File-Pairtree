@@ -1,17 +1,21 @@
-use 5.000000;
+use 5.006;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
 
 WriteMakefile(
-    EXE_FILES         => [ 'pt' ],
-    NAME              => 'File::Pairtree',
-    VERSION_FROM      => 'VERSION',    # finds $VERSION
-    PM		=> {
-		'lib/File/Pairtree.pm'	=> 'blib/lib/File/Pairtree.pm'
-		},
+    EXE_FILES           => [ 'pt' ],
+    NAME                => 'File::Pairtree',
+    AUTHOR              => 'John A. Kunze <jak@ucop.edu>',
+    VERSION_FROM        => 'VERSION',
+    ABSTRACT_FROM       => 'lib/File/Pairtree.pm',
+    ($ExtUtils::MakeMaker::VERSION >= 6.3002
+      ? ('LICENSE'=> 'Apache2')
+      : ()),
+    PM			=> {
+	'lib/File/Pairtree.pm'	=> 'blib/lib/File/Pairtree.pm'
+    },
+    PL_FILES            => {},
     PREREQ_PM         => {
 	'Carp'		=> '0',
 	'Pod::Usage'	=> '0',
@@ -19,11 +23,10 @@ WriteMakefile(
 	'File::Find'	=> '0',
 	'File::Path'	=> '0',
 	'File::Glob'	=> '0',
-	'File::ANVL'	=> '0.15',
-	'File::Value'	=> '0.15',
-	'File::Namaste'	=> '0.15',
+	'File::ANVL'	=> '0.16',
+	'File::Value'	=> '0.16',
+	'File::Namaste'	=> '0.16',
     },
-    ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM  => 'lib/File/Pairtree.pm', # get abstract from moduleXXX
-       AUTHOR         => 'John Kunze <jak@ucop.edu>') : ()),
+    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean               => { FILES => 'File-Value-*' },
 );

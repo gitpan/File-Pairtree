@@ -1,10 +1,10 @@
 --- #YAML:1.0
 name:               File-Pairtree
-version:            0.24
+version:            0.25
 abstract:           routines to manage pairtrees
 author:
-    - John Kunze <jak@ucop.edu>
-license:            unknown
+    - John A. Kunze <jak@ucop.edu>
+license:            Apache2
 distribution_type:  module
 configure_requires:
     ExtUtils::MakeMaker:  0
@@ -12,12 +12,12 @@ build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     Carp:           0
-    File::ANVL:     0.15
+    File::ANVL:     0.16
     File::Find:     0
     File::Glob:     0
-    File::Namaste:  0.15
+    File::Namaste:  0.16
     File::Path:     0
-    File::Value:    0.15
+    File::Value:    0.16
     Getopt::Long:   0
     Pod::Usage:     0
 no_index:

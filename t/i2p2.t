@@ -1,6 +1,7 @@
+use 5.006;
 use Test::More qw( no_plan );
-use warnings;
 use strict;
+use warnings;
 
 my $script = 'pt';		# script we're (not actually) testing
 
