@@ -1,30 +1,22 @@
 --- #YAML:1.0
-name:               File-Pairtree
-version:            0.26
-abstract:           routines to manage pairtrees
-author:
+name:                File-Pairtree
+version:             0.27
+abstract:            command and routines to manage pairtrees
+license:             BSD
+author:              
     - John A. Kunze <jak@ucop.edu>
-license:            Apache2
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
-build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    Carp:           0
-    File::ANVL:     0.16
-    File::Find:     0
-    File::Glob:     0
-    File::Namaste:  0.17
-    File::Path:     0
-    File::Value:    0.17
-    Getopt::Long:   0
-    Pod::Usage:     0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.54
+generated_by:        ExtUtils::MakeMaker version 6.42
+distribution_type:   module
+requires:     
+    Carp:                          0
+    File::Find:                    0
+    File::Glob:                    0
+    File::Namaste:                 0.20
+    File::OM:                      0.21
+    File::Path:                    0
+    File::Value:                   0.20
+    Getopt::Long:                  0
+    Pod::Usage:                    0
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3
