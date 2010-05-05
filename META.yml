@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                File-Pairtree
-version:             0.27
+version:             0.28
 abstract:            command and routines to manage pairtrees
 license:             BSD
 author:              
