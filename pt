@@ -8,7 +8,8 @@ use warnings;
 
 my $VERSION = $File::Pairtree::VERSION;
 
-use File::Pairtree;
+use File::Pairtree ':all';
+use File::Value qw( fiso_uname );
 use File::Path;
 use File::Find;		# for lstree, lsnode
 use File::OM;
@@ -135,7 +136,7 @@ sub do_lsnode { my( @nodes )=@_;
 	my $exit_status = 0;		# optimistic
 
 	# set options so pt_lsnode doesn't need to compute each time
-	$o{parent_dir} = up_dir($dir);
+	$o{parent_dir} = fiso_uname($dir);
 	$o{prefix} = get_prefix( $o{parent_dir} );
 	$o{force} = $opt{force};
 
@@ -171,8 +172,8 @@ sub do_lstree { my( @trees )=@_;
 			$om->elem('error', "$tree: no such file or directory");
 			next;
 		}
-		# set prefix based on $tree's parent (from up_dir)
-		$o{parent_dir} = up_dir($tree);
+		# set prefix based on $tree's parent (from fiso_uname)
+		$o{parent_dir} = fiso_uname($tree);
 		$o{prefix} = get_prefix( $o{parent_dir} );
 		$o{force} = $opt{force};
 		$o{long} = $opt{long};
@@ -206,7 +207,7 @@ sub do_mknode { my( @nodes )=@_;
 	my $exit_status = 0;	# optimistic
 
 	# set options so pt_mknode doesn't need to compute each time
-	$o{parent_dir} = up_dir($dir);
+	$o{parent_dir} = fiso_uname($dir);
 	$o{prefix} = get_prefix( $o{parent_dir} );
 	$o{bud_style} = $opt{bud};
 	$o{force} = $opt{force};
@@ -248,7 +249,7 @@ sub do_rmnode { my( @nodes )=@_;
 	my $exit_status = 0;		# optimistic
 
 	# set options so pt_rmnode doesn't need to compute each time
-	$o{parent_dir} = up_dir($dir);
+	$o{parent_dir} = fiso_uname($dir);
 	$o{prefix} = get_prefix( $o{parent_dir} );
 	$o{force} = $opt{force};
 

@@ -5,29 +5,36 @@ use strict;
 use warnings;
 
 our $VERSION;
-$VERSION = sprintf "%d.%02d", q$Name: Release-0-28 $ =~ /Release-(\d+)-(\d+)/;
+#$VERSION = sprintf "%d.%02d", q$Name: Release-0-28 $ =~ /Release-(\d+)-(\d+)/;
+$VERSION = sprintf "%s", q$Name: Release-v0.300.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
 
 require Exporter;
 our @ISA = qw(Exporter);
 
-our @EXPORT = qw(
+our @EXPORT = qw();
+our @EXPORT_OK = qw(
 	id2ppath ppath2id s2ppchars id2pairpath pairpath2id
 	pt_lsnode pt_lstree pt_mknode pt_mktree pt_rmnode
 	pt_mkbud
-	up_dir get_prefix
+	get_prefix
 	$pfixtail
 	$pair $pairp1 $pairm1
 );
-# XXXX exporting way to much?
-
-our @EXPORT_OK = qw(
-	$pair $pairp1 $pairm1
-);
+our %EXPORT_TAGS = (all => [ @EXPORT_OK ]);
 
 our @EXPORT_FAIL = qw(
 	pair=1 pair=2 pair=3 pair=4 pair=5 pair=6 pair=7 pair=8 pair=9
 );
 push @EXPORT_OK, @EXPORT_FAIL;		# add pseudo-symbols we will trap
+
+#our @EXPORT = qw(
+#	id2ppath ppath2id s2ppchars id2pairpath pairpath2id
+#	pt_lsnode pt_lstree pt_mknode pt_mktree pt_rmnode
+#	pt_mkbud
+#	get_prefix
+#	$pfixtail
+#	$pair $pairp1 $pairm1
+#);
 
 # This is a magic routine that the Exporter calls for any unknown symbols.
 # We use it to permit export of pseudo-symbols "pair=1", "pair=2", ...,
@@ -254,21 +261,22 @@ sub ppath2id{ my( $path, $pathcomp_sep )=@_;	# single arg form, second
 use Carp;
 use File::Find;
 use File::Path;
-use File::Value;
 use File::ANVL;
+use File::Namaste qw( nam_add );
+use File::Value ':all';
 use File::Glob ':glob';		# standard use of module, which we need
 				# as vanilla glob won't match whitespace
 
-# Return parent with trailing slash intact.
+## Return parent with trailing slash intact.
+##
+#sub up_dir { ( $_ )=@_;
 #
-sub up_dir { ( $_ )=@_;
-
-	return "/"		if m,^/+$,;
-	return "./"		if m,^\./*$,;
-	s,[^/]+/*$,,;
-	return "./"		if m,^$,;
-	return $_;
-}
+#	return "/"		if m,^/+$,;
+#	return "./"		if m,^\./*$,;
+#	s,[^/]+/*$,,;
+#	return "./"		if m,^$,;
+#	return $_;
+#}
 
 my $pfixtail = 'pairtree_prefix';
 
@@ -296,7 +304,7 @@ sub pt_lsnode { my( $dir, $id, $r_opt )=@_;
 		croak "r_opt must reference a hash (for input/output)";
 
 	my $parent_dir = $$r_opt{parent_dir}
-		|| up_dir($dir);
+		|| fiso_uname($dir);
 	my $prefix = $$r_opt{prefix}
 		|| get_prefix($parent_dir);
 
@@ -361,7 +369,7 @@ sub pt_lstree { my( $tree, $r_opt, $r_visit_node, $r_wrapup )=@_;
 	#ref( $r_wrapup ||= \&pt_lstree_wrapup ) eq "CODE" or
 	#	croak "r_wrapup must reference a node-visiting function";
 
-	$$r_opt{parent_dir} ||= up_dir($tree);
+	$$r_opt{parent_dir} ||= fiso_uname($tree);
 	$$r_opt{prefix} ||= get_prefix($$r_opt{prefix});
 
 	$gr_opt = $r_opt;	# make options available to find
@@ -417,7 +425,7 @@ sub pt_mknode { my( $dir, $id, $r_opt )=@_;
 		croak "r_opt must reference a hash (for input/output)";
 
 	my $parent_dir = $$r_opt{parent_dir}
-		|| up_dir($dir);
+		|| fiso_uname($dir);
 	my $prefix = $$r_opt{prefix}
 		|| get_prefix($parent_dir);
 
@@ -450,8 +458,6 @@ sub pt_mknode { my( $dir, $id, $r_opt )=@_;
 	return 1;
 }
 
-use File::Namaste;
-
 sub pt_mktree { my( $dir, $prefix, $r_opt )=@_;
 
 	# XXXX make up my mind about when to croak and when to
@@ -462,7 +468,7 @@ sub pt_mktree { my( $dir, $prefix, $r_opt )=@_;
 		croak "r_opt must reference a hash (for input/output)";
 			# except that we ignore any r_opt inputs here
 
-	my $parent_dir = up_dir($dir);
+	my $parent_dir = fiso_uname($dir);
 	my $ret;
 	eval { $ret = mkpath($dir) };
 	if ($@) {
@@ -482,7 +488,7 @@ sub pt_mktree { my( $dir, $prefix, $r_opt )=@_;
 		$$r_opt{msg} = "$pxfile: $msg";
 		return 1;
 	}
-	$msg = nam_set($dir, undef, '0', "pairtree_$VERSION");
+	$msg = nam_add($dir, undef, '0', "pairtree_$VERSION");
 	# xxxx croak or return via r_opt{msg}
 	$msg		and croak "Couldn't create namaste tag in $dir: $msg";
 
@@ -497,7 +503,7 @@ sub pt_rmnode { my( $dir, $id, $r_opt )=@_;
 		croak "r_opt must reference a hash (for input/output)";
 
 	my $parent_dir = $$r_opt{parent_dir}
-		|| up_dir($dir);
+		|| fiso_uname($dir);
 	my $prefix = $$r_opt{prefix}
 		|| get_prefix($parent_dir);
 
