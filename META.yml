@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               File-Pairtree
-version:            v0.300.0
+version:            v0.301.0
 abstract:           pt (command) and routines to manage pairtrees
 author:
     - John A. Kunze <jak@ucop.edu>
@@ -13,10 +13,10 @@ build_requires:
 requires:
     Carp:           0
     File::Find:     0
-    File::Namaste:  0.20
+    File::Namaste:  v0.260.0
     File::OM:       0.21
     File::Path:     0
-    File::Value:    0.20
+    File::Value:    v0.250.0
     Getopt::Long:   0
     Pod::Usage:     0
 no_index:

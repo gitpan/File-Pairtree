@@ -6,7 +6,7 @@ use warnings;
 
 our $VERSION;
 #$VERSION = sprintf "%d.%02d", q$Name: Release-0-28 $ =~ /Release-(\d+)-(\d+)/;
-$VERSION = sprintf "%s", q$Name: Release-v0.300.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
+$VERSION = sprintf "%s", q$Name: Release-v0.301.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
 
 require Exporter;
 our @ISA = qw(Exporter);
