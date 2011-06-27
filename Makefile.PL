@@ -8,7 +8,7 @@ WriteMakefile(
     NAME                => 'File::Pairtree',
     AUTHOR              => 'John A. Kunze <jak@ucop.edu>',
     VERSION_FROM        => 'VERSION',
-    ABSTRACT            => 'pt (command) and routines to manage pairtrees',
+    ABSTRACT            => 'pt command and routines to manage pairtrees',
     ($ExtUtils::MakeMaker::VERSION ge 6.3002
       ? ('LICENSE'=> 'BSD')
       : ()),

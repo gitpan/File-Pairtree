@@ -6,7 +6,7 @@ use warnings;
 
 our $VERSION;
 #$VERSION = sprintf "%d.%02d", q$Name: Release-0-28 $ =~ /Release-(\d+)-(\d+)/;
-$VERSION = sprintf "%s", q$Name: Release-v0.301.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
+$VERSION = sprintf "%s", q$Name: Release-v0.302.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -488,7 +488,9 @@ sub pt_mktree { my( $dir, $prefix, $r_opt )=@_;
 		$$r_opt{msg} = "$pxfile: $msg";
 		return 1;
 	}
-	$msg = nam_add($dir, undef, '0', "pairtree_$VERSION");
+	$msg = nam_add($dir, undef, '0', "pairtree_$VERSION",
+		# xxx better to use 0 to mean "don't truncate"
+		length("pairtree_$VERSION"));
 	# xxxx croak or return via r_opt{msg}
 	$msg		and croak "Couldn't create namaste tag in $dir: $msg";
 

@@ -108,9 +108,13 @@ $x = `$cmd -d $td lstree`;
 like $x, qr/6 objects/, 'make and list 6 object tree, overlapping ids';
 
 my $R = 'pairtree_root';
-`date > $td/$R/ab/c/foo`;	# set up unencapsulated file error
-`mkdir $td/$R/de/f/fo`;		# set up shorty after morty error
-`mkdir $td/$R/gh/i/ghi2`;	# set up unencapsulated group error
+filval("> $td/$R/ab/c/foo", "content");	# set up unencapsulated file error
+mkdir "$td/$R/de/f/fo";			# set up shorty after morty error
+mkdir "$td/$R/gh/i/ghi2";		# set up unencapsulated group error
+# YYY!!! don't use `date ...` ever because on Windows it prompts user!
+#`date > $td/$R/ab/c/foo`;	# set up unencapsulated file error
+#`mkdir $td/$R/de/f/fo`;		# set up shorty after morty error
+#`mkdir $td/$R/gh/i/ghi2`;	# set up unencapsulated group error
 
 $x = `$cmd -d $td lstree`;
 like $x, qr/split end/s, 'detected split end';
