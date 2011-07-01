@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               File-Pairtree
-version:            v0.302.0
+version:            v0.303.0
 abstract:           pt command and routines to manage pairtrees
 author:
     - John A. Kunze <jak@ucop.edu>

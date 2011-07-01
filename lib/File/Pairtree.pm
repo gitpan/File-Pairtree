@@ -6,7 +6,7 @@ use warnings;
 
 our $VERSION;
 #$VERSION = sprintf "%d.%02d", q$Name: Release-0-28 $ =~ /Release-(\d+)-(\d+)/;
-$VERSION = sprintf "%s", q$Name: Release-v0.302.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
+$VERSION = sprintf "%s", q$Name: Release-v0.303.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -259,9 +259,10 @@ sub ppath2id{ my( $path, $pathcomp_sep )=@_;	# single arg form, second
 }
 
 use Carp;
+use File::Spec;
 use File::Find;
 use File::Path;
-use File::ANVL;
+#use File::ANVL;
 use File::Namaste qw( nam_add );
 use File::Value ':all';
 use File::Glob ':glob';		# standard use of module, which we need
@@ -277,6 +278,8 @@ use File::Glob ':glob';		# standard use of module, which we need
 #	return "./"		if m,^$,;
 #	return $_;
 #}
+
+our $Win;			# whether we're running on Windows
 
 my $pfixtail = 'pairtree_prefix';
 
@@ -368,6 +371,9 @@ sub pt_lstree { my( $tree, $r_opt, $r_visit_node, $r_wrapup )=@_;
 		croak "r_visit_node must reference a node-visiting function";
 	#ref( $r_wrapup ||= \&pt_lstree_wrapup ) eq "CODE" or
 	#	croak "r_wrapup must reference a node-visiting function";
+
+	defined($Win) or	# if we're on a Windows platform avoid -l
+		$Win = grep(/Win32|OS2/i, @File::Spec::ISA);
 
 	$$r_opt{parent_dir} ||= fiso_uname($tree);
 	$$r_opt{prefix} ||= get_prefix($$r_opt{prefix});
@@ -613,7 +619,7 @@ sub pt_visit_node {	# receives no args
 	# If we follow symlinks (usual), we have to expect the -l type,
 	# which hides the type of the link target (what we really want).
 	#
-	if (-l _) {
+	if (! $Win and -l _) {
 		$symlinkcount++;
 		print "XXXX SYMLINK $_\n";
 		# yyy presumably this branch never happens when
@@ -958,7 +964,7 @@ sub visit{	# receives no args
 	# If we get here, the stack top's pp is the same as our parent
 	# (or it's empty because we're at our first node ever).
 	#
-	if (-l _) {
+	if (! $Win and -l _) {
 		print "XXXX SYMLINK $_\n";
 		# XXX what does this branch do when _not_ following links?
 		($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $sze)
