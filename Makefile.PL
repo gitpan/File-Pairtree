@@ -16,18 +16,17 @@ WriteMakefile(
 	'lib/File/Pairtree.pm'	=> 'blib/lib/File/Pairtree.pm'
     },
     PL_FILES            => {},
-# xxx undeclared glob, hoping this will lead to more testing
-#     under MSWin 'File::Glob'	=> '0',
 # xxx do we really need Carp?
     PREREQ_PM         => {
 	'Carp'		=> '0',
 	'Pod::Usage'	=> '0',
 	'Getopt::Long'	=> '0',
+	'File::Glob'	=> '0',
 	'File::Find'	=> '0',
 	'File::Path'	=> '0',
 	'File::OM'	=> '0.21',
 	'File::Value'	=> 'v0.250.0',
-	'File::Namaste'	=> 'v0.260.0',
+	'File::Namaste'	=> 'v0.261.0',
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'File-Value-*' },
