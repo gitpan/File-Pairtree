@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 our $VERSION;
-$VERSION = sprintf "%d.%02d", q$Name: Release-1-00 $ =~ /Release-(\d+)-(\d+)/;
+$VERSION = sprintf "%d.%02d", q$Name: Release-1-01 $ =~ /Release-(\d+)-(\d+)/;
 #$VERSION = sprintf "%s", q$Name: Release-v0.304.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
 #our $NVERSION;			# pure numeric 2-part equivalent version
 #($NVERSION = $VERSION) =~ s/v(\d+\.\d+)\.\d+/$1/;
@@ -244,6 +244,9 @@ use File::Glob ':glob';		# standard use of module, which we need
 				# as vanilla glob won't match whitespace
 
 our $Win;			# whether we're running on Windows
+# xxx should probably test directly for symlink capacity
+defined($Win) or	# if we're on a Windows platform avoid -l
+	$Win = grep(/Win32|OS2/i, @File::Spec::ISA);
 
 my $pfixtail = 'pairtree_prefix';
 
@@ -491,14 +494,6 @@ sub make_visitor { my( $r_opt )=@_;
 		$visit_over);
 }
 
-my $objectcount = 0;		# number of objects encountered
-my $filecount = 0;		# number of files encountered xxx
-my $dircount = 0;		# number of directories encountered xxx
-my $symlinkcount = 0;		# number of symlinks encountered xxx
-my $irregularcount = 0;		# non file, non dir fs items to report xxx
-
-my $gr_opt;	# global version of r_opt to communicate with find
-
 sub pt_lstree { my( $tree, $r_opt, $r_visit_node, $r_wrapup )=@_;
 
 	$tree		or croak "no tree dir or empty tree dir";
@@ -508,10 +503,6 @@ sub pt_lstree { my( $tree, $r_opt, $r_visit_node, $r_wrapup )=@_;
 		croak "r_visit_node must reference a node-visiting function";
 	#ref( $r_wrapup ||= \&pt_lstree_wrapup ) eq "CODE" or
 	#	croak "r_wrapup must reference a node-visiting function";
-
-	# xxx should probably test directly for symlink capacity
-	defined($Win) or	# if we're on a Windows platform avoid -l
-		$Win = grep(/Win32|OS2/i, @File::Spec::ISA);
 
 	$tree = fiso_dname($tree, $R);	# make sure we have descender
 	$$r_opt{parent_dir} ||= fiso_uname($tree);
@@ -523,28 +514,6 @@ sub pt_lstree { my( $tree, $r_opt, $r_visit_node, $r_wrapup )=@_;
 	my $ret = find($find_opt, $tree);
 	$visit_over and
 		&$visit_over($ret, $tree);
-	return $ret;
-
-#	$gr_opt = $r_opt;	# make options available to find
-#	my %find_opt = (
-#		'wanted'	=>  $r_visit_node,
-#		'follow_fast'	=>  $$r_opt{follow_fast},
-#	);
-#
-#	#print "Id      Oxum\n";		# XXXXXX this is our r_startup
-#
-#	my $ret = find(\%find_opt, $tree);
-#
-#	# XXXXX this is our r_wrapup
-#	# Dummy call to pt_newobj() to cough up the last buffered object.
-#	pt_newobj("", 0, 0, 0);			# shake out the last one
-#	# XXX what does find return?
-#	#print "lstree: find returned '$ret' for $tree"		if $ret;
-#	$gr_opt->{om}->elem('lstree', "find returned '$ret' for $tree")	if $ret;
-#	#print "$objectcount object", ($objectcount == 1 ? "" : "s"), "\n";
-#	$gr_opt->{om}->elem('objectcount', "$objectcount object" .
-#		($objectcount == 1 ? "" : "s"));
-
 	return $ret;
 }
 
@@ -698,6 +667,44 @@ sub pt_rmid { my( $dir, $id, $r_opt )=@_;
 	return 0;			# success
 }
 
+1;
+
+__END__
+
+=head1 NAME
+
+File::Pairtree - routines to manage pairtrees
+
+=head1 SYNOPSIS
+
+ use File::Pairtree;           # imports routines into a Perl script
+
+ id2ppath($id);                # returns pairpath corresponding to $id
+ id2ppath($id, $separator);    # if you want an alternate separator char
+
+ ppath2id($path);              # returns id corresponding to $path
+ ppath2id($path, $separator);  # if you want an alternate separator char
+
+ pt_budstr();
+ pt_mkid();
+ pt_mktree();
+ pt_rmid();
+ pt_lsid();
+
+=head1 DESCRIPTION
+
+This is very brief documentation for the B<Pairtree> Perl module.
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2008-2011 UC Regents.  Open source BSD license.
+
+=cut
+
+__END__
+
+=for removing
+
 #use File::Find;
 # $File::Find::prune = 1
 
@@ -839,41 +846,7 @@ sub pt_visit_node {	# receives no args
 	}
 }
 
-1;
-
-__END__
-
-=head1 NAME
-
-File::Pairtree - routines to manage pairtrees
-
-=head1 SYNOPSIS
-
- use File::Pairtree;           # imports routines into a Perl script
-
- id2ppath($id);                # returns pairpath corresponding to $id
- id2ppath($id, $separator);    # if you want an alternate separator char
-
- ppath2id($path);              # returns id corresponding to $path
- ppath2id($path, $separator);  # if you want an alternate separator char
-
- pt_budstr();
- pt_mkid();
- pt_mktree();
- pt_rmid();
- pt_lsid();
-
-=head1 DESCRIPTION
-
-This is very brief documentation for the B<Pairtree> Perl module.
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2008-2011 UC Regents.  Open source BSD license.
-
 =cut
-
-__END__
 
 #!/usr/bin/perl -w -Ilib
 
