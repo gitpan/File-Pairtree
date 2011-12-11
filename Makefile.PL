@@ -26,7 +26,7 @@ WriteMakefile(
 	'File::Path'	=> '0',
 	'File::OM'	=> '0.21',
 	'File::Value'	=> '1.01',
-	'File::Namaste'	=> '1.00',
+	'File::Namaste'	=> '1.01',
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'File-Value-*' },

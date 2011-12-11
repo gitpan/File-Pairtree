@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 our $VERSION;
-$VERSION = sprintf "%d.%02d", q$Name: Release-1-01 $ =~ /Release-(\d+)-(\d+)/;
+$VERSION = sprintf "%d.%02d", q$Name: Release-1-02 $ =~ /Release-(\d+)-(\d+)/;
 #$VERSION = sprintf "%s", q$Name: Release-v0.304.0$ =~ /Release-(v\d+\.\d+\.\d+)/;
 #our $NVERSION;			# pure numeric 2-part equivalent version
 #($NVERSION = $VERSION) =~ s/v(\d+\.\d+)\.\d+/$1/;
@@ -605,7 +605,7 @@ sub pt_mktree { my( $dir, $prefix, $r_opt )=@_;
 		return 1;
 	}
 
-	my $pxfile = $parent_dir . $pfixtail;
+	my $pxfile = File::Spec->catfile($parent_dir, $pfixtail);
 	my $msg = file_value("> $pxfile", $prefix)
 		if ($prefix);
 	if ($msg) {
